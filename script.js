@@ -53,6 +53,7 @@ function resetCalculator() {
     operator = "";
     displayFirstNumber = "";
     displaySecondNumber = "";
+    onFirstNumber = true;
     displayNumber(display, firstNumber);
     resetBtn();
 }
@@ -64,6 +65,7 @@ displayNumber(display, defaultNumber);
 let displayFirstNumber = "";
 let firstNumber = 0;
 let operator = "";
+let anotherOperator = "";
 let secondNumber = 0;
 let displaySecondNumber = "";
 let onFirstNumber = true;
@@ -80,35 +82,72 @@ for (let i = 0; i < buttons.length; i++) {
                 console.log(firstNumber);
             }
             
-            if (clickBtn === "+" || clickBtn === "-" || clickBtn === "*" || clickBtn === "/") {
-                resetBtn();
-                e.target.style.opacity = 0.8;
-                operator = clickBtn;
-                console.log(operator);
-                onFirstNumber = false;
+            else if (clickBtn === "+" || clickBtn === "-" || clickBtn === "*" || clickBtn === "/") {
+                if (operator === "") {
+                    resetBtn();
+                    e.target.style.opacity = 0.8;
+                    operator = clickBtn;
+                    console.log(operator);
+                    onFirstNumber = false;
+                } else {
+                    resetBtn();
+                    anotherOperator = clickBtn;
+                    e.target.style.opacity = 0.8;
+                    console.log(`Another Operator: ${anotherOperator}`);
+                    let result = operate(firstNumber, secondNumber, operator);
+                    displayNumber(display, result);
+                    console.log(result);
+
+                    // Reset Part
+                    firstNumber = result;
+                    displaySecondNumber = "";
+                    secondNumber = 0;
+                    onFirstNumber = false;
+                    operator = anotherOperator;
+                }   
+                
             }
 
-            if ((clickBtn >= 0 && clickBtn <= 9) && !onFirstNumber) {
+            else if ((clickBtn >= 0 && clickBtn <= 9) && !onFirstNumber) {
                 displaySecondNumber += clickBtn;
                 displayNumber(display, displaySecondNumber);
                 secondNumber = Number(displaySecondNumber);
                 console.log(secondNumber);
             }
 
-            if (clickBtn === "=") {
-                let result = operate(firstNumber, secondNumber, operator);
-                displayNumber(display, result);
-                console.log(result);
-                firstNumber = 0;
-                secondNumber = 0;
-                displayFirstNumber = "";
-                displaySecondNumber = "";
-                operator = "";
-                onFirstNumber = true;
-                resetBtn();
+            else if (clickBtn === "=") {
+                if (firstNumber === 0 && secondNumber === 0 && operator === "") {
+                    displayNumber(display, defaultNumber);
+                } else {
+                    console.log(`First Number: ${firstNumber}`);
+                    console.log(`Second Number: ${secondNumber}`);
+                    let result = operate(firstNumber, secondNumber, operator);
+                    if (result === Infinity) {
+                        displayNumber(display, "ERROR404");
+                    } else {
+                        displayNumber(display, result);
+                        console.log(result);
+                    }
+                    
+                    if (firstNumber !== 0) {
+                        firstNumber = result;
+                        displaySecondNumber = "";
+                        secondNumber = 0;
+                        onFirstNumber = false;
+                        resetBtn();
+                    } else {
+                        firstNumber = 0;
+                        secondNumber = 0;
+                        displayFirstNumber = "";
+                        displaySecondNumber = "";
+                        operator = "";
+                        onFirstNumber = true;
+                        resetBtn();
+                    }
+                }
             }
 
-            if (clickBtn === "clear") {
+            else if (clickBtn === "clear") {
                 resetCalculator();
             }
 
